@@ -40,15 +40,22 @@ namespace WebApplication2.Controllers
         [HttpPost]
         public async Task<ActionResult<Song>> PostSong(Song song)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _context.Songs.Add(song);
+                await _context.SaveChangesAsync();
+
+                return Ok(song);
             }
-
-            _context.Songs.Add(song);
-            await _context.SaveChangesAsync();
-
-            return Ok(song);
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error: " + ex.Message);
+            }
         }
 
         // PUT: api/Songs/5
